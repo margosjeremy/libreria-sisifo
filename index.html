@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librería Sísifo</title>
+    <style>
+        :root {
+            --primary-color: #6b1d2f; 
+            --primary-dark: #4a121f;
+            --secondary-color: #d4af37; 
+            --bg-color: #fcfbf9;
+            --card-bg: #ffffff;
+            --text-color: #2b2b2b;
+            --light-gray: #f0eee9;
+            --border-color: #e2ded6;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Georgia', 'Segoe UI', serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 40px;
+        }
+
+        /* BARRA LATERAL (SIDEBAR) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 100%;
+            background-color: var(--primary-dark);
+            color: white;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            z-index: 900;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            padding-top: 15px;
+        }
+
+        .sidebar:hover { width: 230px; }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            padding: 15px 12px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand-text {
+            font-weight: bold;
+            font-size: 13px;
+            color: #fff;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            font-family: sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar:hover .sidebar-brand-text { opacity: 1; }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 12px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+
+        .sidebar-item:hover { background-color: var(--primary-color); }
+
+        .sidebar-icon {
+            font-size: 20px;
+            min-width: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .sidebar-text {
+            margin-left: 15px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .sidebar-text { opacity: 1; }
+
+        .cart-badge {
+            background-color: var(--secondary-color);
+            color: #000;
+            border-radius: 50%;
+            padding: 2px 7px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .top-bar {
+            background-color: var(--primary-dark);
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+            padding: 6px 0;
+            letter-spacing: 1px;
+            font-family: sans-serif;
+            margin-left: 50px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 0 70px;
+        }
+
+        /* HEADER PRINCIPAL */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .brand-title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .brand-title-container h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .brand-logo-img {
+            height: 48px;
+            width: 48px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            background-color: #ffffff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge-user {
+            background: var(--light-gray);
+            color: var(--primary-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+            font-family: sans-serif;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: sans-serif;
+            font-size: 13px;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-dark); }
+        .btn-secondary { background-color: var(--secondary-color); color: #2b2b2b; }
+        .btn-secondary:hover { background-color: #b89628; }
+        .btn-danger { background-color: #c0392b; color: white; }
+        .btn-danger:hover { background-color: #962d22; }
+        .btn-success { background-color: #27ae60; color: white; }
+        .btn:disabled { background-color: #bdc3c7 !important; color: #7f8c8d !important; cursor: not-allowed; }
+
+        .category-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .cat-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .cat-btn {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .cat-btn:hover, .cat-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-del-cat {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            line-height: 18px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 0;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 25px;
+            font-size: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            outline: none;
+            background-color: white;
+            font-family: sans-serif;
+        }
+
+        .admin-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .admin-panel h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-family: sans-serif;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            font-family: sans-serif;
+            background: #fff;
+        }
+
+        .catalogo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card:hover { transform: translateY(-4px); }
+
+        .cover-container {
+            width: 100%;
+            height: 240px;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            background-color: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cover-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .badge-cat {
+            display: inline-block;
+            background-color: var(--light-gray);
+            color: var(--primary-color);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 11px;
+            margin-bottom: 8px;
+            font-family: sans-serif;
+            text-transform: uppercase;
+        }
+
+        .card h3 { color: var(--primary-dark); font-size: 17px; margin-bottom: 6px; }
+        .info { font-size: 13px; color: #666; margin-bottom: 4px; font-family: sans-serif; }
+
+        .footer-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .precio { font-size: 18px; font-weight: bold; color: var(--primary-color); font-family: sans-serif; }
+        .stock { font-size: 12px; font-weight: bold; font-family: sans-serif; }
+        .con-stock { color: #27ae60; }
+        .sin-stock { color: #c0392b; }
+
+        .admin-controls {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .admin-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .admin-controls input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* ESTILOS DE LA SECCIÓN DE COMPRAS/PEDIDOS */
+        .orders-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .order-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-family: sans-serif;
+        }
+
+        .order-id {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .order-date {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .order-grid-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            font-family: sans-serif;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .order-info-box h5 {
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .order-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: sans-serif;
+            font-size: 13px;
+            margin-top: 10px;
+            background: #faf9f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .order-items-table th, .order-items-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-items-table th {
+            background: var(--light-gray);
+            color: var(--primary-dark);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        /* VISTA DE DETALLE A PÁGINA COMPLETA */
+        .detalle-pagina {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .detalle-grid-completo {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .detalle-img-completa {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 6px;
+            background-color: var(--light-gray);
+        }
+
+        .detalle-info-completa h2 {
+            color: var(--primary-dark);
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .descripcion-seccion {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .descripcion-seccion h4 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-family: sans-serif;
+            font-size: 15px;
+        }
+
+        .descripcion-seccion p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .sugerencias-seccion {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .sugerencias-seccion h3 {
+            color: var(--primary-dark);
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* VISTA DE CHECKOUT */
+        .checkout-pagina {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 0.9fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .checkout-seccion-titulo {
+            color: var(--primary-dark);
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-family: sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .checkout-box {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 6px;
+            background: #fff;
+            margin-bottom: 20px;
+        }
+
+        .checkout-resumen-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: sans-serif;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .checkout-resumen-tabla th {
+            text-align: left;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .checkout-resumen-tabla td {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-gray);
+            color: #444;
+        }
+
+        .checkout-resumen-totales {
+            font-family: sans-serif;
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .checkout-fila-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .checkout-fila-total.final {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 10px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 10px;
+        }
+
+        .payment-method-box {
+            background-color: #f7f6f3;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        /* MODALES */
+        .modal {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-family: sans-serif;
+        }
+
+        .cart-total {
+            margin-top: 15px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-family: sans-serif;
+        }
+
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-family: sans-serif;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: fadeInOut 3.5s ease forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="toastContainer"></div>
+
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="sidebar-brand-text">Librería Sísifo</span>
+        </div>
+        <div class="sidebar-item" onclick="irInicio()">
+            <span class="sidebar-icon">📚</span>
+            <span class="sidebar-text">Catálogo</span>
+        </div>
+        <div class="sidebar-item" onclick="abrirModalCarrito()">
+            <span class="sidebar-icon">🛒</span>
+            <span class="sidebar-text">Ver Carrito <span id="cartCount" class="cart-badge">0</span></span>
+        </div>
+        <div class="sidebar-item" onclick="abrirModalUbicacion()">
+            <span class="sidebar-icon">📍</span>
+            <span class="sidebar-text">Ubicación de Tienda</span>
+        </div>
+        <a href="https://wa.me/50255986763" target="_blank" class="sidebar-item">
+            <span class="sidebar-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.124-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                </svg>
+            </span>
+            <span class="sidebar-text">+502 5598-6763</span>
+        </a>
+        <a href="https://www.instagram.com/libreria_sisifo/" target="_blank" class="sidebar-item">
+            <span class="sidebar-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+            </span>
+            <span class="sidebar-text">Instagram</span>
+        </a>
+        <!-- SECCIÓN COMPRAS AGREGADA JUSTO DEBAJO DE INSTAGRAM -->
+        <div id="sidebarAdminOrders" class="sidebar-item hidden" onclick="irASeccionPedidos()">
+            <span class="sidebar-icon">📦</span>
+            <span class="sidebar-text">Compras <span id="ordersSidebarBadge" class="cart-badge">0</span></span>
+        </div>
+    </aside>
+
+    <div class="top-bar">
+        Librería Sísifo 
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="brand-title-container" onclick="irInicio()">
+                <h1>Librería Sísifo</h1>
+                <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=" alt="Logo Sísifo" class="brand-logo-img">
+            </div>
+            <div class="user-info">
+                <span id="userStatus" class="badge-user">Invitado</span>
+            </div>
+        </header>
+
+        <!-- PANEL DE ADMINISTRADOR -->
+        <section id="adminPanel" class="admin-panel hidden">
+            <div class="admin-header">
+                <h2>Agregar Libro al Catálogo</h2>
+                <!-- BOTÓN "Ver Pedidos / Compras (o)" SEGÚN EL DISEÑO SOLICITADO -->
+                <button class="btn btn-secondary" onclick="irASeccionPedidos()">📦 Ver Pedidos / Compras (<span id="ordersBtnCount">0</span>)</button>
+            </div>
+            <form id="bookForm" onsubmit="agregarLibro(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Título</label><input type="text" id="titulo" required></div>
+                    <div class="form-group"><label>Autor</label><input type="text" id="autor" required></div>
+                    <div class="form-group"><label>Año</label><input type="number" id="fecha" required></div>
+                    <div class="form-group"><label>Categoría</label><input type="text" id="categoria" required></div>
+                    <div class="form-group"><label>Precio (Q)</label><input type="number" id="precio" step="0.01" required></div>
+                    <div class="form-group"><label>Stock</label><input type="number" id="stock" min="0" required></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>URL Portada</label><input type="url" id="portada"></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Descripción</label><textarea id="descripcion" rows="3" required></textarea></div>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Añadir Libro a la Tienda</button>
+            </form>
+        </section>
+
+        <!-- VISTA PRINCIPAL (CATÁLOGO) -->
+        <div id="vistaPrincipal">
+            <div class="category-bar" id="categoryBar"></div>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar por título, autor o categoría..." onkeyup="filtrarLibros()">
+            </div>
+
+            <main class="catalogo" id="catalogo"></main>
+        </div>
+
+        <!-- VISTA ADMINISTRADOR DE PEDIDOS / COMPRAS -->
+        <div id="vistaPedidos" class="orders-container hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button class="btn btn-secondary" onclick="irInicio()">← Volver al Catálogo</button>
+                <button class="btn btn-danger" onclick="limpiarHistorialPedidos()">Vaciar Historial de Pedidos</button>
+            </div>
+            <h2 style="color: var(--primary-dark); font-size: 24px; margin-bottom: 20px;">📦 Pedidos y Compras Recibidas</h2>
+            <div id="pedidosListaContainer">
+                <!-- Se poblará dinámicamente con JS -->
+            </div>
+        </div>
+
+        <!-- VISTA DE DETALLE A PÁGINA COMPLETA -->
+        <div id="vistaDetalle" class="detalle-pagina hidden">
+            <button class="btn btn-secondary" style="margin-bottom: 20px;" onclick="irInicio()">← Volver al Catálogo</button>
+            <div class="detalle-grid-completo">
+                <img id="detPortada" class="detalle-img-completa" src="" alt="Portada">
+                <div class="detalle-info-completa">
+                    <span id="detCategoria" class="badge-cat"></span>
+                    <h2 id="detTitulo"></h2>
+                    <p class="info"><strong>Autor:</strong> <span id="detAutor"></span></p>
+                    <p class="info"><strong>Año de Publicación:</strong> <span id="detFecha"></span></p>
+                    <p class="info" style="margin-top: 10px;"><strong>Disponibilidad:</strong> <span id="detStock" class="stock"></span></p>
+                    <p class="precio" style="margin: 15px 0;"><span id="detPrecio"></span></p>
+                    
+                    <div class="descripcion-seccion">
+                        <h4>Descripción de la obra</h4>
+                        <p id="detDescripcion"></p>
+                    </div>
+
+                    <div id="controlesCompraDetalle" style="margin-top: 25px;">
+                        <div class="form-group" style="margin-bottom: 15px; max-width: 150px;">
+                            <label><strong>Cantidad:</strong></label>
+                            <input type="number" id="detCantidad" value="1" min="1">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="btnAgregarCarrito" class="btn btn-secondary" onclick="agregarAlCarrito()">Agregar al Carrito</button>
+                            <button id="btnComprarModal" class="btn btn-primary" onclick="comprarDesdeDetalle()">Comprar Ahora</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sugerencias-seccion">
+                <h3>Libros similares que te podrían interesar</h3>
+                <div class="catalogo" id="sugerenciasCatalogo"></div>
+            </div>
+        </div>
+
+        <!-- VISTA DE CHECKOUT (FINALIZAR COMPRA) -->
+        <div id="vistaCheckout" class="checkout-pagina hidden">
+            <button class="btn btn-secondary" style="margin-bottom: 20px;" onclick="irInicio()">← Volver al Catálogo</button>
+
+            <form id="formCheckout" onsubmit="completarCheckoutFinal(event)">
+                <div class="checkout-grid">
+                    <div>
+                        <div class="checkout-seccion-titulo">Detalles de Facturación</div>
+                        <div class="checkout-box">
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                                <div class="form-group">
+                                    <label>Nombre de Factura *</label>
+                                    <input type="text" id="nombreFactura" required placeholder="Nombre fiscal">
+                                </div>
+                                <div class="form-group">
+                                    <label>NIT *</label>
+                                    <input type="text" id="nit" required placeholder="Ej. 123456-7 o C/F">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nombre *</label>
+                                    <input type="text" id="clienteNombre" required placeholder="Nombre">
+                                </div>
+                                <div class="form-group">
+                                    <label>Apellidos *</label>
+                                    <input type="text" id="clienteApellido" required placeholder="Apellidos">
+                                </div>
+                                <div class="form-group">
+                                    <label>Correo electrónico *</label>
+                                    <input type="email" id="clienteEmail" required placeholder="correo@ejemplo.com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Teléfono *</label>
+                                    <input type="tel" id="clienteTelefono" required placeholder="Número de teléfono">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checkout-seccion-titulo" style="margin-top: 30px;">Detalles de Envíos</div>
+                        <div class="checkout-box">
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label>País / Región</label>
+                                <input type="text" value="Guatemala" readonly style="background: var(--light-gray);">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label>Departamento *</label>
+                                <select id="departamento" required>
+                                    <option value="">Elige una opción...</option>
+                                    <option value="Quetzaltenango">Quetzaltenango</option>
+                                    <option value="Guatemala">Guatemala</option>
+                                    <option value="Sacatepéquez">Sacatepéquez (Antigua)</option>
+                                    <option value="Huehuetenango">Huehuetenango</option>
+                                    <option value="San Marcos">San Marcos</option>
+                                    <option value="Jalapa">Jalapa</option>
+                                    <option value="Jutiapa">Jutiapa</option>
+                                    <option value="Alta Verapaz">Alta Verapaz</option>
+                                    <option value="Baja Verapaz">Baja Verapaz</option>
+                                    <option value="Chimaltenango">Chimaltenango</option>
+                                    <option value="Chiquimula">Chiquimula</option>
+                                    <option value="El Progreso">El Progreso</option>
+                                    <option value="Escuintla">Escuintla</option>
+                                    <option value="Izabal">Izabal</option>
+                                    <option value="Petén">Petén</option>
+                                    <option value="Quiché">Quiché</option>
+                                    <option value="Retalhuleu">Retalhuleu</option>
+                                    <option value="Santa Rosa">Santa Rosa</option>
+                                    <option value="Sololá">Sololá</option>
+                                    <option value="Suchitepéquez">Suchitepéquez</option>
+                                    <option value="Totonicapán">Totonicapán</option>
+                                    <option value="Zacapa">Zacapa</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label>Dirección de entrega *</label>
+                                <input type="text" id="direccion" required placeholder="Nombre de la calle y número de la casa">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <input type="text" id="direccionDetalle" placeholder="Apartamento, habitación, unidad, etc (opcional)">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label>Notas del pedido (opcional)</label>
+                                <textarea id="notasPedido" rows="3" placeholder="Notas sobre tu pedido, por ejemplo, notas especiales para la entrega."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="checkout-seccion-titulo">Tu Pedido</div>
+                        <div class="checkout-box">
+                            <table class="checkout-resumen-tabla">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th style="text-align: right;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="checkoutItemsList"></tbody>
+                            </table>
+
+                            <div class="checkout-resumen-totales">
+                                <div class="checkout-fila-total">
+                                    <span>Subtotal</span>
+                                    <span>Q.<span id="checkoutSubtotal">0.00</span></span>
+                                </div>
+                                <div class="checkout-fila-total final">
+                                    <span>TOTAL</span>
+                                    <span>Q.<span id="checkoutTotal">0.00</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-method-box">
+                            <div>
+                                <label style="font-family: sans-serif; font-size: 14px; font-weight: bold; display: block; color: var(--primary-dark);">
+                                    <input type="radio" name="paymentMethod" value="Efectivo (Contra Entrega)" checked style="margin-right: 8px;"> Pago Contra Entrega -SOLO EN EFECTIVO -
+                                </label>
+                                <div id="efectivoCampos" style="padding-left: 22px; margin-top: 10px;">
+                                    <ul style="font-size: 13px; color: #555; font-family: sans-serif; list-style-type: disc; display: flex; flex-direction: column; gap: 5px;">
+                                        <li>Pagar solamente en efectivo al momento de la entrega.</li>
+                                        <li>Su pedido incluirá la factura respectiva.</li>
+                                        <li>No se aceptan pagos con cheque, tarjetas de crédito – débito.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnFinalizarPedido" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 14px; font-size: 15px; background-color: #163d70; letter-spacing: 0.5px;">REALIZAR EL PEDIDO</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODALES (CARRITO Y UBICACIÓN) -->
+    <div id="cartModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal('cartModal')">&times;</span>
+            <h2>🛒 Carrito de Compras</h2>
+            <div id="cartItemsContainer" style="max-height: 250px; overflow-y: auto;"></div>
+            <div class="cart-total">Total: Q.<span id="cartTotalSum">0.00</span></div>
+            <button class="btn btn-success" style="width: 100%; margin-top: 15px;" onclick="irAlCheckout()">Procesar Compra</button>
+        </div>
+    </div>
+
+    <div id="locationModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal('locationModal')">&times;</span>
+            <h2>📍 Ubicación de la Tienda</h2>
+            <p style="font-family: sans-serif; font-size: 14px; margin-bottom: 10px;">
+                <strong>Librería Sísifo</strong>
+            </p>
+            <p style="font-family: sans-serif; font-size: 13px; color: #555; margin-bottom: 15px;">
+                4.ta calle 23-29 zona 3 Plaza La Villa, Quetzaltenango, Guatemala.<br>
+                <strong>Horario:</strong> Lunes a Sábado de 9:00 AM a 6:30 PM.<br>
+                <a href="https://maps.app.goo.gl/F6v2mq2dDpr4wJod8" target="_blank" style="color: var(--primary-color); font-weight: bold; text-decoration: none;">
+                    Abrir enlace en Google Maps ↗
+                </a>
+            </p>
+            <div style="width: 100%; height: 300px; border-radius: 6px; overflow: hidden;">
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    style="border:0;" 
+                    src="https://maps.google.com/maps?q=Librer%C3%ADa+S%C3%ADsifo,+4a+Calle+23-29,+Quetzaltenango&t=&z=18&ie=UTF8&iwloc=B&output=embed" 
+                    allowfullscreen="">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = 'https://hook.us2.make.com/wc8klin9kkp2m5wedkorymebkazwh8g8';
+
+        let usuarioActual = null;
+        let categoriaSeleccionada = "Todos";
+        let libroSeleccionado = null;
+        let carrito = [];
+
+        const librosIniciales = [
+            { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", fecha: 1967, categoria: "Narrativa", precio: 185.00, stock: 12, portada: "https://images-na.ssl-images-amazon.com/images/I/71W8S1Ssp-L.jpg", descripcion: "Una obra maestra de la literatura hispanoamericana que narra la historia de la familia Buendía a lo largo de varias generaciones en el pueblo ficticio de Macondo." },
+            { id: 2, titulo: "1984", autor: "George Orwell", fecha: 1949, categoria: "Ciencia Ficción", precio: 140.00, stock: 5, portada: "https://images-na.ssl-images-amazon.com/images/I/71kxa1-0mfL.jpg", descripcion: "Novela política de distopía que introduce conceptos emblemáticos sobre el totalitarismo, la vigilancia masiva y el control estricto de la sociedad por el Gran Hermano." },
+            { id: 3, titulo: "El principito", autor: "Antoine de Saint-Exupéry", fecha: 1943, categoria: "Filosofía", precio: 95.00, stock: 0, portada: "https://images-na.ssl-images-amazon.com/images/I/71O242A169L.jpg", descripcion: "Un cuento poético y filosófico que reflexiona sobre la amistad, el amor, la soledad y el sentido de la vida a través de los ojos de un pequeño príncipe." },
+            { id: 4, titulo: "El Señor de los Anillos", autor: "J.R.R. Tolkien", fecha: 1954, categoria: "Fantasía", precio: 260.00, stock: 8, portada: "https://images-na.ssl-images-amazon.com/images/I/81U5O3WACUU.jpg", descripcion: "Epopeya fantástica que relata la peligrosa misión de un grupo diverso para destruir el Anillo Único y derrotar al Señor Oscuro Sauron." }
+        ];
+
+        let libros = JSON.parse(localStorage.getItem('libros')) || librosIniciales;
+        let categorias = JSON.parse(localStorage.getItem('categorias')) || ["Todos", "Narrativa", "Ciencia Ficción", "Filosofía", "Fantasía"];
+        let pedidosRealizados = JSON.parse(localStorage.getItem('pedidosRealizados')) || [];
+
+        window.onload = () => {
+            guardarDatos();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('ingresar') === 'admin') {
+                usuarioActual = 'admin';
+                document.getElementById('userStatus').innerText = "Administrador";
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('sidebarAdminOrders').classList.remove('hidden');
+            } else {
+                document.getElementById('userStatus').innerText = "Invitado";
+                document.getElementById('adminPanel').classList.add('hidden');
+                document.getElementById('sidebarAdminOrders').classList.add('hidden');
+            }
+
+            actualizarContadoresPedidos();
+            renderizarCategorias();
+            renderizarCatalogo();
+        };
+
+        function mostrarToast(mensaje) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = mensaje;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
+
+        function guardarDatos() {
+            localStorage.setItem('libros', JSON.stringify(libros));
+            localStorage.setItem('categorias', JSON.stringify(categorias));
+            localStorage.setItem('pedidosRealizados', JSON.stringify(pedidosRealizados));
+        }
+
+        function actualizarContadoresPedidos() {
+            const count = pedidosRealizados.length;
+            document.getElementById('ordersBtnCount').innerText = count;
+            document.getElementById('ordersSidebarBadge').innerText = count;
+        }
+
+        function irInicio() {
+            document.getElementById('vistaDetalle').classList.add('hidden');
+            document.getElementById('vistaCheckout').classList.add('hidden');
+            document.getElementById('vistaPedidos').classList.add('hidden');
+            document.getElementById('vistaPrincipal').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function irASeccionPedidos() {
+            if (usuarioActual !== 'admin') return;
+            renderizarListaPedidos();
+            document.getElementById('vistaPrincipal').classList.add('hidden');
+            document.getElementById('vistaDetalle').classList.add('hidden');
+            document.getElementById('vistaCheckout').classList.add('hidden');
+            document.getElementById('vistaPedidos').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function renderizarListaPedidos() {
+            const container = document.getElementById('pedidosListaContainer');
+            container.innerHTML = '';
+
+            if (pedidosRealizados.length === 0) {
+                container.innerHTML = '<p style="font-family: sans-serif; color: #777;">No se ha recibido ninguna compra por el momento.</p>';
+                return;
+            }
+
+            pedidosRealizados.slice().reverse().forEach((pedido, index) => {
+                const card = document.createElement('div');
+                card.className = 'order-card';
+
+                let productosHtml = '';
+                pedido.productos.forEach(prod => {
+                    productosHtml += `
+                        <tr>
+                            <td>${prod.titulo}</td>
+                            <td>${prod.cantidad}</td>
+                            <td>Q.${prod.precio.toFixed(2)}</td>
+                            <td>Q.${(prod.precio * prod.cantidad).toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="order-header">
+                        <span class="order-id">Pedido #${pedido.id || (pedidosRealizados.length - index)}</span>
+                        <span class="order-date">📅 ${pedido.fecha}</span>
+                    </div>
+                    <div class="order-grid-info">
+                        <div class="order-info-box">
+                            <h5>Cliente y Contacto</h5>
+                            <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
+                            <p><strong>Email:</strong> ${pedido.cliente.email}</p>
+                            <p><strong>Teléfono:</strong> ${pedido.cliente.telefono}</p>
+                        </div>
+                        <div class="order-info-box">
+                            <h5>Datos de Facturación</h5>
+                            <p><strong>Nombre Factura:</strong> ${pedido.facturacion.nombreFactura}</p>
+                            <p><strong>NIT:</strong> ${pedido.facturacion.nit}</p>
+                            <p><strong>Método de Pago:</strong> ${pedido.metodoPago}</p>
+                        </div>
+                        <div class="order-info-box">
+                            <h5>Dirección de Envío</h5>
+                            <p><strong>Departamento:</strong> ${pedido.envio.departamento}</p>
+                            <p><strong>Dirección:</strong> ${pedido.envio.direccion}</p>
+                            ${pedido.envio.direccionDetalle ? `<p><strong>Detalle:</strong> ${pedido.envio.direccionDetalle}</p>` : ''}
+                            ${pedido.envio.notas ? `<p><strong>Notas:</strong> ${pedido.envio.notas}</p>` : ''}
+                        </div>
+                    </div>
+                    <h5 style="font-family: sans-serif; text-transform: uppercase; font-size: 11px; color: var(--primary-dark); margin-bottom: 5px;">Detalle de Productos</h5>
+                    <table class="order-items-table">
+                        <thead>
+                            <tr>
+                                <th>Libro / Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unit.</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${productosHtml}
+                        </tbody>
+                    </table>
+                    <div style="text-align: right; margin-top: 15px; font-family: sans-serif; font-size: 16px; font-weight: bold; color: var(--primary-color);">
+                        Monto Total: Q.${pedido.total.toFixed(2)}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function limpiarHistorialPedidos() {
+            if (confirm('¿Estás seguro de que deseas borrar todo el historial de compras recibidas?')) {
+                pedidosRealizados = [];
+                guardarDatos();
+                actualizarContadoresPedidos();
+                renderizarListaPedidos();
+                mostrarToast('Historial de pedidos vaciado.');
+            }
+        }
+
+        function renderizarCategorias() {
+            const container = document.getElementById('categoryBar');
+            container.innerHTML = '';
+            const esAdmin = usuarioActual === 'admin';
+
+            categorias.forEach(cat => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cat-wrapper';
+
+                const btn = document.createElement('button');
+                btn.className = `cat-btn ${cat === categoriaSeleccionada ? 'active' : ''}`;
+                btn.innerText = cat;
+                btn.onclick = () => filtrarCategoria(cat);
+                
+                wrapper.appendChild(btn);
+
+                if (esAdmin && cat !== "Todos") {
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn-del-cat';
+                    delBtn.innerHTML = '&times;';
+                    delBtn.title = `Eliminar categoría ${cat}`;
+                    delBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        eliminarCategoria(cat);
+                    };
+                    wrapper.appendChild(delBtn);
+                }
+
+                container.appendChild(wrapper);
+            });
+        }
+
+        function eliminarCategoria(cat) {
+            if (confirm(`¿Estás seguro de que deseas eliminar la categoría "${cat}"?`)) {
+                categorias = categorias.filter(c => c !== cat);
+                if (categoriaSeleccionada === cat) categoriaSeleccionada = "Todos";
+                guardarDatos();
+                renderizarCategorias();
+                renderizarCatalogo();
+                mostrarToast(`Categoría "${cat}" eliminada.`);
+            }
+        }
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function obtenerCantidadEnCarrito(idLibro) {
+            return carrito.filter(item => item.id === idLibro).length;
+        }
+
+        function renderizarCatalogo() {
+            const catalogo = document.getElementById('catalogo');
+            catalogo.innerHTML = '';
+
+            const librosFiltrados = libros.filter(libro => {
+                return categoriaSeleccionada === "Todos" || libro.categoria.toLowerCase() === categoriaSeleccionada.toLowerCase();
+            });
+
+            librosFiltrados.forEach(libro => {
+                const stockClase = libro.stock > 0 ? 'con-stock' : 'sin-stock';
+                const esAdmin = usuarioActual === 'admin';
+                const imagenPortada = libro.portada || 'https://via.placeholder.com/150x220?text=Sin+Portada';
+
+                const cantidadEnCarrito = obtenerCantidadEnCarrito(libro.id);
+                const yaEstaEnCarrito = cantidadEnCarrito > 0;
+                const superaStock = cantidadEnCarrito >= libro.stock;
+
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card';
+                tarjeta.onclick = (e) => {
+                    if (!e.target.closest('.admin-controls') && !e.target.closest('.btn-comprar-card')) {
+                        abrirDetalleLibro(libro.id);
+                    }
+                };
+
+                tarjeta.innerHTML = `
+                    <div>
+                        <div class="cover-container">
+                            <img src="${imagenPortada}" alt="${libro.titulo}" class="cover-img" onerror="this.src='https://via.placeholder.com/150x220?text=Sin+Portada'">
+                        </div>
+                        <span class="badge-cat">${libro.categoria}</span>
+                        <h3>${libro.titulo}</h3>
+                        <p class="info"><strong>Autor:</strong> ${libro.autor}</p>
+                        <p class="info"><strong>Publicación:</strong> ${libro.fecha}</p>
+                    </div>
+                    <div class="footer-card">
+                        <span class="precio">Q.${libro.precio.toFixed(2)}</span>
+                        <span class="stock ${stockClase}">Stock: ${libro.stock}</span>
+                    </div>
+
+                    ${!esAdmin ? `
+                        <button class="btn btn-primary btn-comprar-card" style="margin-top: 12px; width: 100%;" 
+                            onclick="event.stopPropagation(); comprarLibro(${libro.id}, 1)" 
+                            ${libro.stock === 0 || superaStock ? 'disabled' : ''}>
+                            ${libro.stock === 0 ? 'Agotado' : (yaEstaEnCarrito ? '✓ Ya en el Carrito' : 'Comprar')}
+                        </button>
+                    ` : ''}
+
+                    ${esAdmin ? `
+                        <div class="admin-controls" onclick="event.stopPropagation();">
+                            <div class="admin-row">
+                                <input type="number" id="p-${libro.id}" step="0.01" value="${libro.precio}" title="Precio">
+                                <input type="number" id="s-${libro.id}" min="0" value="${libro.stock}" title="Stock">
+                            </div>
+                            <div class="admin-row">
+                                <input type="url" id="img-${libro.id}" value="${libro.portada || ''}" placeholder="URL de la nueva foto">
+                            </div>
+                            <div class="admin-row" style="justify-content: flex-end;">
+                                <button class="btn btn-success" style="flex: 1;" title="Guardar cambios" onclick="actualizarLibro(${libro.id})">Guardar Cambios</button>
+                                <button class="btn btn-danger" title="Eliminar producto" onclick="eliminarLibro(${libro.id})">✕</button>
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+                catalogo.appendChild(tarjeta);
+            });
+        }
+
+        function eliminarLibro(id) {
+            const libro = libros.find(l => l.id === id);
+            if (libro && confirm(`¿Estás seguro de que deseas eliminar "${libro.titulo}" del catálogo?`)) {
+                libros = libros.filter(l => l.id !== id);
+                guardarDatos();
+                renderizarCatalogo();
+                mostrarToast('Libro eliminado correctamente.');
+            }
+        }
+
+        function abrirDetalleLibro(id) {
+            libroSeleccionado = libros.find(l => l.id === id);
+            if (!libroSeleccionado) return;
+
+            document.getElementById('detTitulo').innerText = libroSeleccionado.titulo;
+            document.getElementById('detAutor').innerText = libroSeleccionado.autor;
+            document.getElementById('detFecha').innerText = libroSeleccionado.fecha;
+            document.getElementById('detCategoria').innerText = libroSeleccionado.categoria;
+            document.getElementById('detPrecio').innerText = `Q.${libroSeleccionado.precio.toFixed(2)}`;
+            document.getElementById('detPortada').src = libroSeleccionado.portada || 'https://via.placeholder.com/280x400?text=Sin+Portada';
+            document.getElementById('detDescripcion').innerText = libroSeleccionado.descripcion || 'Sin descripción disponible para este libro.';
+            
+            const cantInput = document.getElementById('detCantidad');
+            cantInput.value = 1;
+            cantInput.max = libroSeleccionado.stock;
+
+            const stockElem = document.getElementById('detStock');
+            stockElem.innerText = libroSeleccionado.stock > 0 ? `En Stock (${libroSeleccionado.stock})` : 'Agotado';
+            stockElem.className = `stock ${libroSeleccionado.stock > 0 ? 'con-stock' : 'sin-stock'}`;
+
+            const cantidadEnCarrito = obtenerCantidadEnCarrito(libroSeleccionado.id);
+            const bloqueadoPorStock = libroSeleccionado.stock === 0 || cantidadEnCarrito >= libroSeleccionado.stock || usuarioActual === 'admin';
+
+            document.getElementById('btnComprarModal').disabled = bloqueadoPorStock;
+            document.getElementById('btnAgregarCarrito').disabled = bloqueadoPorStock;
+            
+            if (usuarioActual === 'admin') {
+                document.getElementById('btnAgregarCarrito').innerText = 'Modo Administrador';
+                document.getElementById('btnComprarModal').innerText = 'Modo Administrador';
+            } else if (bloqueadoPorStock) {
+                document.getElementById('btnAgregarCarrito').innerText = cantidadEnCarrito >= libroSeleccionado.stock ? 'Stock Máximo en Carrito' : 'Agotado';
+            } else {
+                document.getElementById('btnAgregarCarrito').innerText = 'Agregar al Carrito';
+                document.getElementById('btnComprarModal').innerText = 'Comprar Ahora';
+            }
+
+            renderizarSugerencias(libroSeleccionado);
+
+            document.getElementById('vistaPrincipal').classList.add('hidden');
+            document.getElementById('vistaCheckout').classList.add('hidden');
+            document.getElementById('vistaPedidos').classList.add('hidden');
+            document.getElementById('vistaDetalle').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function renderizarSugerencias(libroActual) {
+            const contenedorSugerencias = document.getElementById('sugerenciasCatalogo');
+            contenedorSugerencias.innerHTML = '';
+
+            const sugerencias = libros.filter(l => 
+                l.categoria.toLowerCase() === libroActual.categoria.toLowerCase() && l.id !== libroActual.id
+            );
+
+            if (sugerencias.length === 0) {
+                contenedorSugerencias.innerHTML = '<p style="font-family: sans-serif; color: #777; grid-column: 1 / -1;">No hay más libros disponibles en esta categoría.</p>';
+                return;
+            }
+
+            sugerencias.slice(0, 3).forEach(libro => {
+                const stockClase = libro.stock > 0 ? 'con-stock' : 'sin-stock';
+                const imagenPortada = libro.portada || 'https://via.placeholder.com/150x220?text=Sin+Portada';
+                const cantidadEnCarrito = obtenerCantidadEnCarrito(libro.id);
+                const yaEstaEnCarrito = cantidadEnCarrito > 0;
+                const superaStock = cantidadEnCarrito >= libro.stock;
+                const esAdmin = usuarioActual === 'admin';
+
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card';
+                tarjeta.onclick = () => abrirDetalleLibro(libro.id);
+
+                tarjeta.innerHTML = `
+                    <div>
+                        <div class="cover-container">
+                            <img src="${imagenPortada}" alt="${libro.titulo}" class="cover-img" onerror="this.src='https://via.placeholder.com/150x220?text=Sin+Portada'">
+                        </div>
+                        <span class="badge-cat">${libro.categoria}</span>
+                        <h3>${libro.titulo}</h3>
+                        <p class="info"><strong>Autor:</strong> ${libro.autor}</p>
+                        <p class="info"><strong>Publicación:</strong> ${libro.fecha}</p>
+                    </div>
+                    <div class="footer-card">
+                        <span class="precio">Q.${libro.precio.toFixed(2)}</span>
+                        <span class="stock ${stockClase}">Stock: ${libro.stock}</span>
+                    </div>
+                    ${!esAdmin ? `
+                        <button class="btn btn-primary btn-comprar-card" style="margin-top: 12px; width: 100%;" 
+                            onclick="event.stopPropagation(); comprarLibro(${libro.id}, 1)" 
+                            ${libro.stock === 0 || superaStock ? 'disabled' : ''}>
+                            ${libro.stock === 0 ? 'Agotado' : (yaEstaEnCarrito ? '✓ Ya en el Carrito' : 'Comprar')}
+                        </button>
+                    ` : ''}
+                `;
+                contenedorSugerencias.appendChild(tarjeta);
+            });
+        }
+
+        function agregarAlCarrito() {
+            if (usuarioActual === 'admin') return;
+            const cant = parseInt(document.getElementById('detCantidad').value) || 1;
+            const cantidadEnCarrito = obtenerCantidadEnCarrito(libroSeleccionado.id);
+
+            if (!libroSeleccionado || (cantidadEnCarrito + cant) > libroSeleccionado.stock) {
+                alert('La cantidad seleccionada supera el stock disponible o el límite permitido en el carrito.');
+                return;
+            }
+            
+            for (let i = 0; i < cant; i++) {
+                carrito.push(libroSeleccionado);
+            }
+            actualizarCarritoUI();
+            mostrarToast(`🛒 (${cant}) "${libroSeleccionado.titulo}" agregado(s).`);
+            irInicio();
+            renderizarCatalogo();
+        }
+
+        function actualizarCarritoUI() {
+            document.getElementById('cartCount').innerText = carrito.length;
+            const container = document.getElementById('cartItemsContainer');
+            container.innerHTML = '';
+
+            let total = 0;
+            if (carrito.length === 0) {
+                container.innerHTML = '<p style="font-family: sans-serif; color: #777; text-align: center;">El carrito está vacío.</p>';
+            } else {
+                carrito.forEach((item, index) => {
+                    total += item.precio;
+                    const el = document.createElement('div');
+                    el.className = 'cart-item';
+                    el.innerHTML = `
+                        <div>
+                            <strong>${item.titulo}</strong><br>
+                            <small>Q.${item.precio.toFixed(2)}</small>
+                        </div>
+                        <button class="btn btn-danger" style="padding: 3px 8px;" onclick="eliminarDelCarrito(${index})">X</button>
+                    `;
+                    container.appendChild(el);
+                });
+            }
+            document.getElementById('cartTotalSum').innerText = total.toFixed(2);
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarritoUI();
+            renderizarCatalogo();
+        }
+
+        function abrirModalCarrito() {
+            actualizarCarritoUI();
+            document.getElementById('cartModal').classList.remove('hidden');
+        }
+
+        function abrirModalUbicacion() {
+            document.getElementById('locationModal').classList.remove('hidden');
+        }
+
+        function comprarDesdeDetalle() {
+            if (!libroSeleccionado || usuarioActual === 'admin') return;
+            const cant = parseInt(document.getElementById('detCantidad').value) || 1;
+            comprarLibro(libroSeleccionado.id, cant);
+            irAlCheckout();
+        }
+
+        function comprarLibro(id, cantidad = 1) {
+            if (usuarioActual === 'admin') return;
+            const libro = libros.find(l => l.id === id);
+            const cantidadEnCarrito = obtenerCantidadEnCarrito(id);
+
+            if (libro && (cantidadEnCarrito + cantidad) <= libro.stock) {
+                for (let i = 0; i < cantidad; i++) {
+                    carrito.push(libro);
+                }
+                actualizarCarritoUI();
+                mostrarToast(`¡"${libro.titulo}" añadido al carrito!`);
+                renderizarCatalogo();
+            } else {
+                alert('No puedes agregar más unidades de este producto (supera el stock disponible).');
+            }
+        }
+
+        function irAlCheckout() {
+            if (carrito.length === 0) {
+                alert('El carrito está vacío. Agrega productos antes de procesar la compra.');
+                return;
+            }
+            cerrarModal('cartModal');
+
+            const itemsListContainer = document.getElementById('checkoutItemsList');
+            itemsListContainer.innerHTML = '';
+            let subtotal = 0;
+
+            const conteoItems = {};
+            carrito.forEach(item => {
+                if (!conteoItems[item.id]) {
+                    conteoItems[item.id] = { ...item, cantidad: 0 };
+                }
+                conteoItems[item.id].cantidad++;
+            });
+
+            Object.values(conteoItems).forEach(item => {
+                const totalItem = item.precio * item.cantidad;
+                subtotal += totalItem;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.titulo} × ${item.cantidad}</td>
+                    <td style="text-align: right;">Q.${totalItem.toFixed(2)}</td>
+                `;
+                itemsListContainer.appendChild(tr);
+            });
+
+            document.getElementById('checkoutSubtotal').innerText = subtotal.toFixed(2);
+            document.getElementById('checkoutTotal').innerText = subtotal.toFixed(2);
+
+            document.getElementById('vistaPrincipal').classList.add('hidden');
+            document.getElementById('vistaDetalle').classList.add('hidden');
+            document.getElementById('vistaPedidos').classList.add('hidden');
+            document.getElementById('vistaCheckout').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        async function completarCheckoutFinal(e) {
+            e.preventDefault();
+
+            const btnSubmit = document.getElementById('btnFinalizarPedido');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "PROCESANDO PEDIDO...";
+
+            const conteoItems = {};
+            carrito.forEach(item => {
+                if (!conteoItems[item.id]) {
+                    conteoItems[item.id] = { titulo: item.titulo, precio: item.precio, cantidad: 0 };
+                }
+                conteoItems[item.id].cantidad++;
+            });
+
+            const listaProductos = Object.values(conteoItems);
+            const totalCompra = parseFloat(document.getElementById('checkoutTotal').innerText);
+            const metodoPagoSeleccionado = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+            const payloadPedido = {
+                id: Date.now(),
+                fecha: new Date().toLocaleString('es-GT', { timeZone: 'America/Guatemala' }),
+                facturacion: {
+                    nombreFactura: document.getElementById('nombreFactura').value,
+                    nit: document.getElementById('nit').value
+                },
+                cliente: {
+                    nombre: document.getElementById('clienteNombre').value + ' ' + document.getElementById('clienteApellido').value,
+                    email: document.getElementById('clienteEmail').value,
+                    telefono: document.getElementById('clienteTelefono').value
+                },
+                envio: {
+                    departamento: document.getElementById('departamento').value,
+                    direccion: document.getElementById('direccion').value,
+                    direccionDetalle: document.getElementById('direccionDetalle').value || '',
+                    notas: document.getElementById('notasPedido').value || ''
+                },
+                metodoPago: metodoPagoSeleccionado,
+                productos: listaProductos,
+                total: totalCompra
+            };
+
+            try {
+                // Registrar el pedido en el historial local del administrador
+                pedidosRealizados.push(payloadPedido);
+
+                // Descontar inventario local
+                carrito.forEach(item => {
+                    const libro = libros.find(l => l.id === item.id);
+                    if (libro && libro.stock > 0) {
+                        libro.stock--;
+                    }
+                });
+
+                guardarDatos();
+                actualizarContadoresPedidos();
+
+                // Intentar enviar notificación por Webhook a Make
+                fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payloadPedido)
+                }).catch(err => console.log('Error silenciado al enviar al webhook:', err));
+
+                mostrarToast('¡Pedido realizado con éxito! La notificación ha sido enviada al administrador.');
+                carrito = [];
+                actualizarCarritoUI();
+                renderizarCatalogo();
+                document.getElementById('formCheckout').reset();
+                irInicio();
+            } catch (error) {
+                console.error('Error procesando compra:', error);
+                alert('Ocurrió un error al procesar el pedido.');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "REALIZAR EL PEDIDO";
+            }
+        }
+
+        function agregarLibro(e) {
+            e.preventDefault();
+            const catIngresada = document.getElementById('categoria').value.trim();
+
+            const nuevoLibro = {
+                id: Date.now(),
+                titulo: document.getElementById('titulo').value,
+                autor: document.getElementById('autor').value,
+                fecha: parseInt(document.getElementById('fecha').value),
+                categoria: catIngresada,
+                precio: parseFloat(document.getElementById('precio').value),
+                stock: parseInt(document.getElementById('stock').value),
+                portada: document.getElementById('portada').value,
+                descripcion: document.getElementById('descripcion').value
+            };
+
+            libros.push(nuevoLibro);
+
+            if (catIngresada && !categorias.some(c => c.toLowerCase() === catIngresada.toLowerCase())) {
+                categorias.push(catIngresada);
+            }
+
+            guardarDatos();
+            renderizarCategorias();
+            renderizarCatalogo();
+            document.getElementById('bookForm').reset();
+            mostrarToast('Libro agregado al catálogo con éxito.');
+        }
+
+        function actualizarLibro(id) {
+            const nuevoPrecio = parseFloat(document.getElementById(`p-${id}`).value);
+            const nuevoStock = parseInt(document.getElementById(`s-${id}`).value);
+            const nuevaPortada = document.getElementById(`img-${id}`).value.trim();
+            const libro = libros.find(l => l.id === id);
+
+            if (libro) {
+                libro.precio = nuevoPrecio;
+                libro.stock = Math.max(0, nuevoStock);
+                libro.portada = nuevaPortada;
+                guardarDatos();
+                renderizarCatalogo();
+                mostrarToast('¡Libro actualizado correctamente!');
+            }
+        }
+
+        function filtrarCategoria(cat) {
+            categoriaSeleccionada = cat;
+            renderizarCategorias();
+            renderizarCatalogo();
+        }
+
+        function filtrarLibros() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.card').forEach(tarjeta => {
+                tarjeta.style.display = tarjeta.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
